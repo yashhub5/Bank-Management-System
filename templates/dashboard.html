@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🏦 Yash Bank Dashboard</h1>
+
+    <p>Welcome to your banking portal.</p>
+
+    <hr>
+
+    <button onclick="checkBalance()"> Check Balance</button>
+
+    <br><br> 
+
+    <button onclick="deposit()"> Deposit</button>
+
+    <br><br>
+
+    <button onclick="withdraw()"> Withdraw</button>
+
+    <br><br>
+
+    <button onclick="transfer()"> Transfer Money</button>
+
+    <br><br>
+
+    <button onclick="history()"> Transaction History</button>
+
+    <br><br>
+
+    <button onclick="logout()"> Logout</button>
+
+    <hr>
+
+    <h2 id="result"></h2>
+
+</div>
+
+<script>
+
+function getToken(){
+
+    return localStorage.getItem("token");
+
+}
+
+async function checkBalance(){
+
+    const token = getToken();
+
+    const res = await fetch("/check_balance",{
+
+        method:"GET",
+
+        headers:{
+            Authorization:`Bearer ${token}`
+        }
+
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+
+        document.getElementById("result").innerHTML =
+        `💰 Balance : ₹${data.balance}`;
+
+    }
+
+    else{
+
+        alert(data.error || data.msg);
+
+    }
+
+}
+
+async function deposit() {
+
+const amount = prompt("Enter amount to deposit:");
+
+if (!amount) {
+    return;
+}
+
+const token = localStorage.getItem("token");
+
+const res = await fetch("/deposit", {
+
+    method: "POST",
+
+    headers: {
+
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+
+    },
+
+    body: JSON.stringify({
+
+        amount: Number(amount)
+
+    })
+
+});
+
+const data = await res.json();
+
+if (res.ok) {
+
+    document.getElementById("result").innerText =
+        ` ${data.message}\nDeposited ₹${data.amount}`;
+
+} else {
+
+    alert(data.error || data.msg);
+
+}
+
+}
+async function withdraw() {
+
+const amount = prompt("Enter amount to withdraw:");
+
+if (amount === null || amount.trim() === "") {
+    return;
+}
+
+const token = localStorage.getItem("token");
+
+const res = await fetch("/withdraw", {
+
+    method: "POST",
+
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    },
+
+    body: JSON.stringify({
+        amount: Number(amount)
+    })
+
+});
+
+const data = await res.json();
+
+if (res.ok) {
+
+    document.getElementById("result").innerHTML =
+        ` ${data.message}<br>Withdrawn ₹${data.amount}`;
+
+} else {
+
+    alert(data.error || data.msg);
+
+}
+
+}
+
+async function transfer() {
+
+const receiver_id = prompt("Enter Receiver ID:");
+
+if (receiver_id === null || receiver_id.trim() === "") {
+    return;
+}
+
+const amount = prompt("Enter Amount:");
+
+if (amount === null || amount.trim() === "") {
+    return;
+}
+
+const token = localStorage.getItem("token");
+
+const res = await fetch("/transfer", {
+
+    method: "POST",
+
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    },
+
+    body: JSON.stringify({
+        receiver_id: Number(receiver_id),
+        amount: Number(amount)
+    })
+
+});
+
+const data = await res.json();
+
+if (res.ok) {
+
+    document.getElementById("result").innerHTML =
+        ` ${data.message}<br>
+         Amount: ₹${data.amount}<br>
+         Reference ID: ${data.reference_id}`;
+
+} else {
+
+    alert(data.error || data.msg);
+
+}
+
+}
+async function history() {
+
+const token = localStorage.getItem("token");
+
+const res = await fetch("/transactions", {
+
+    method: "GET",
+
+    headers: {
+        "Authorization": `Bearer ${token}`
+    }
+
+});
+
+const data = await res.json();
+
+if (res.ok) {
+
+    let output = "<h3>Transaction History</h3>";
+
+    if (data.length === 0) {
+        output += "<p>No transactions found.</p>";
+    } else {
+
+        output += "<table border='1' cellpadding='8' cellspacing='0'>";
+        output += `
+            <tr>
+                <th>Transaction ID</th>
+                <th>Amount</th>
+                <th>Type</th>
+            </tr>
+        `;
+
+        data.forEach(txn => {
+
+            output += `
+                <tr>
+                    <td>${txn.txn_id}</td>
+                    <td>₹${txn.amount}</td>
+                    <td>${txn.txn_type}</td>
+                </tr>
+            `;
+
+        });
+
+        output += "</table>";
+    }
+
+    document.getElementById("result").innerHTML = output;
+
+} else {
+
+    alert(data.error || data.msg);
+
+}
+
+}
+
+function logout(){
+
+    localStorage.removeItem("token");
+
+    window.location.href="/login-page";
+
+}
+
+</script>
+
+</body>
+
+</html>
