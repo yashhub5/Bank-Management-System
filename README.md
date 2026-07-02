@@ -14,8 +14,7 @@ A secure Bank Management System built using Flask that provides user authenticat
 - 🔒 Password Protected Routes
 - ⚡ RESTful API Architecture
 - 🗄️ PostgreSQL Database Integration
-- 📝 ORM using SQLAlchemy
-- ⚠️ Exception Handling
+- 📝 SQLAlchemy
 - 🌐 JSON-based API Responses
 
 ---
@@ -27,7 +26,7 @@ A secure Bank Management System built using Flask that provides user authenticat
 - Flask
 - Flask-JWT-Extended
 - Flask-SQLAlchemy
-- SQLAlchemy ORM
+- SQLAlchemy 
 
 ### Database
 - PostgreSQL
@@ -92,9 +91,8 @@ python app.py
 
 - JWT Authentication
 - REST APIs
-- SQLAlchemy ORM
+- SQLAlchemy 
 - PostgreSQL
-- Exception Handling
 - JSON Responses
 - HTTP Methods (GET, POST)
 - MVC Structure (Basic Flask)
